@@ -35,15 +35,11 @@ def move(board, red, blue, axis, direction):
         return red, blue
 
 
-c
-
-
 def solve(board, red, blue):
     que = deque()
     que.append((red, blue, 0, -1))
     visited = set()
     visited.add(to_str(red, blue))
-
     while 1:
         if not que:
             return -1
