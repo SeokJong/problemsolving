@@ -1,12 +1,13 @@
 import copy
 
 
-def move(board, direction, size):
+def move(board, direction, size, n):
     global cache
+    added = [[0 for _ in range(size)] for _ in range(size)]
     if direction == 0:  # left
         step = -1
         for y in range(size):
-            for x in range(1,size):
+            for x in range(1, size):
                 num = board[y][x]
                 if num == 0:
                     continue
@@ -15,9 +16,10 @@ def move(board, direction, size):
                     if tx <= 0:
                         break
                     tx += step
-                if board[y][tx] == num:
+                if board[y][tx] == num and added[y][tx] == 0:
                     board[y][x] = 0
                     board[y][tx] = num*2
+                    added[y][tx] = 1
                 elif board[y][tx] == 0:
                     board[y][x] = 0
                     board[y][tx] = num
@@ -36,9 +38,10 @@ def move(board, direction, size):
                     if tx >= size-1:
                         break
                     tx += step
-                if board[y][tx] == num:
+                if board[y][tx] == num and added[y][tx] == 0:
                     board[y][x] = 0
                     board[y][tx] = num*2
+                    added[y][tx] = 1
                 elif board[y][tx] == 0:
                     board[y][x] = 0
                     board[y][tx] = num
@@ -57,9 +60,10 @@ def move(board, direction, size):
                     if ty >= size-1:
                         break
                     ty += step
-                if board[ty][x] == num:
+                if board[ty][x] == num and added[ty][x] == 0:
                     board[y][x] = 0
                     board[ty][x] = num*2
+                    added[ty][x] = 1
                 elif board[ty][x] == 0:
                     board[y][x] = 0
                     board[ty][x] = num
@@ -78,9 +82,10 @@ def move(board, direction, size):
                     if ty <= 0:
                         break
                     ty += step
-                if board[ty][x] == num:
+                if board[ty][x] == num and added[ty][x] == 0:
                     board[y][x] = 0
                     board[ty][x] = num*2
+                    added[ty][x] = 1
                 elif board[ty][x] == 0:
                     board[y][x] = 0
                     board[ty][x] = num
@@ -90,10 +95,11 @@ def move(board, direction, size):
     coded = ''
     for row in board:
         coded += ''.join(map(str, row))
-    if coded in cache:
+    if coded in cache and cache[coded] <= n:
         board = -1
+        pass
     else:
-        cache.add(coded)
+        cache[coded] = n
     return board
 
 
@@ -112,7 +118,7 @@ def play(board, size, n):
         result = max(max(large), result)
         for direction in range(4):
             resboard = copy.deepcopy(board)
-            resboard = move(resboard, direction, size)
+            resboard = move(resboard, direction, size, n+1)
             if resboard == -1:
                 continue
             play(resboard, size, n+1)
@@ -127,13 +133,12 @@ def main():
         row = list(map(int, input().split()))
         board.append(row)
         coded += ''.join(map(str, row))
-    cache.add(coded)
+    cache[coded] = 0
     play(board, size, 0)
-    print(cache)
     print(result)
 
 
 if __name__ == "__main__":
     result = 0
-    cache = set()
+    cache = dict()
     main()
