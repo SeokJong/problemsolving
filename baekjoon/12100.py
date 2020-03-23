@@ -3,119 +3,88 @@ import copy
 
 def move(board, direction, size, n):
     global cache
-    added = [[0 for _ in range(size)] for _ in range(size)]
+    global result
+    added = set()
+    large = 0
     if direction == 0:  # left
-        step = -1
-        for y in range(size):
-            for x in range(1, size):
-                num = board[y][x]
-                if num == 0:
-                    continue
-                tx = x+step
-                while board[y][tx] == 0:
-                    if tx <= 0:
-                        break
-                    tx += step
-                if board[y][tx] == num and added[y][tx] == 0:
-                    board[y][x] = 0
-                    board[y][tx] = num*2
-                    added[y][tx] = 1
-                elif board[y][tx] == 0:
-                    board[y][x] = 0
-                    board[y][tx] = num
-                else:
-                    board[y][x] = 0
-                    board[y][tx-step] = num
-    if direction == 1:  # right
-        step = +1
-        for y in range(size):
-            for x in range(size-2,-1,-1):
-                num = board[y][x]
-                if num == 0:
-                    continue
-                tx = x+step
-                while board[y][tx] == 0:
-                    if tx >= size-1:
-                        break
-                    tx += step
-                if board[y][tx] == num and added[y][tx] == 0:
-                    board[y][x] = 0
-                    board[y][tx] = num*2
-                    added[y][tx] = 1
-                elif board[y][tx] == 0:
-                    board[y][x] = 0
-                    board[y][tx] = num
-                else:
-                    board[y][x] = 0
-                    board[y][tx-step] = num
-    if direction == 2:  # down
-        step = +1
-        for y in range(size-2, -1, -1):
-            for x in range(size):
-                num = board[y][x]
-                if num == 0:
-                    continue
-                ty = y+step
-                while board[ty][x] == 0:
-                    if ty >= size-1:
-                        break
-                    ty += step
-                if board[ty][x] == num and added[ty][x] == 0:
-                    board[y][x] = 0
-                    board[ty][x] = num*2
-                    added[ty][x] = 1
-                elif board[ty][x] == 0:
-                    board[y][x] = 0
-                    board[ty][x] = num
-                else:
-                    board[y][x] = 0
-                    board[ty-step][x] = num
-    if direction == 3:  # up
-        step = -1
-        for y in range(1, size):
-            for x in range(size):
-                num = board[y][x]
-                if num == 0:
-                    continue
-                ty = y+step
-                while board[ty][x] == 0:
-                    if ty <= 0:
-                        break
-                    ty += step
-                if board[ty][x] == num and added[ty][x] == 0:
-                    board[y][x] = 0
-                    board[ty][x] = num*2
-                    added[ty][x] = 1
-                elif board[ty][x] == 0:
-                    board[y][x] = 0
-                    board[ty][x] = num
-                else:
-                    board[y][x] = 0
-                    board[ty-step][x] = num
-    coded = ''
-    for row in board:
-        coded += ''.join(map(str, row))
-    if coded in cache and cache[coded] <= n:
-        board = -1
-        pass
+        x_step = -1
+        x_range = range(1, size)
+        y_step = 0
+        y_range = range(size)
+    elif direction == 1:  # right
+        x_step = 1
+        x_range = range(size-2, -1, -1)
+        y_step = 0
+        y_range = range(size)
+    elif direction == 2:  # up
+        x_step = 0
+        x_range = range(size)
+        y_step = -1
+        y_range = range(1, size)
+    elif direction == 3:  # down
+        x_step = 0
+        x_range = range(size)
+        y_step = 1
+        y_range = range(size-2, -1, -1)
     else:
-        cache[coded] = n
-    return board
+        return
+    for y in y_range:
+        for x in x_range:
+            num = board[y][x]
+            if num != 0:
+                tx = x + x_step
+                ty = y + y_step
+                while board[ty][tx] == 0:
+                    tx += x_step
+                    ty += y_step
+                    if tx < 0 or ty < 0 or tx >= size or ty >= size:
+                        tx -= x_step
+                        ty -= y_step
+                        break
+                if board[ty][tx] == num and str(ty)+'.'+str(tx) not in added:
+                    board[y][x] = 0
+                    board[ty][tx] = num*2
+                    added.add(str(ty)+'.'+str(tx))
+                    large = max(large, num*2)
+                elif board[ty][tx] == 0:
+                    board[y][x] = 0
+                    board[ty][tx] = num
+                    large = max(large, num)
+                else:
+                    board[y][x] = 0
+                    board[ty-y_step][tx-x_step] = num
+                    large = max(large, num)
+    coded = ''
+    result = max(large, result)
+    if check(n, large):
+        for row in board:
+            coded += ''.join(map(str, row))
+        if coded in cache and cache[coded] <= n:
+            board = -1
+            pass
+        else:
+            cache[coded] = n
+        return board
+    else:
+        return -1
 
+
+def check(n, r):
+    global depth
+    global result
+    chance = depth - n
+    max = r*(2**chance)
+    if max < result:
+        return False
+    else:
+        return True
 
 def play(board, size, n):
     global result
-    if n == 5:
-        large = []
-        for i in board:
-            large.append(max(i))
-        result = max(max(large), result)
+    global depth
+    if n == depth:
         return
     else:
-        large = []
-        for i in board:
-            large.append(max(i))
-        result = max(max(large), result)
         for direction in range(4):
             resboard = copy.deepcopy(board)
             resboard = move(resboard, direction, size, n+1)
@@ -131,14 +100,18 @@ def main():
     coded = ''
     for _ in range(size):
         row = list(map(int, input().split()))
+        result = max(max(row), result)
         board.append(row)
         coded += ''.join(map(str, row))
+    resultmap[0] = result
     cache[coded] = 0
     play(board, size, 0)
     print(result)
 
 
 if __name__ == "__main__":
+    depth = 5
     result = 0
+    resultmap = [0 for _ in range(depth)]
     cache = dict()
     main()
