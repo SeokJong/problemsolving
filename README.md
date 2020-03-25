@@ -45,6 +45,9 @@
   - 주어진 arr을 순회하면서, 1. result가 비어있으면 -> 수 삽입, 2. result 배열에서 해당 수보다 작은 최대수가 있는 위치 오른쪽에 삽입. 3. 각 arr
   요소가 result에서 삽입되는 위치를 position에 기록
   - result의 길이가 결과길이, 각 요소는 position에서 뒤에서부터 순회해서 len(result)-1부터 시작해서 1개씩 줄이면서 출력 (4,3,2,1,0..)
+- 2579
+  - DP문제
+  - 고려한 케이스 -> max(OXOXO, XOOXO), OXOO 이렇게 2개를 저장해서 최종계단에서 다시 max.
 ## SWEA
 - 2819
   - DFS, Memoization
