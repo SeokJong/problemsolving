@@ -1,6 +1,6 @@
 import sys
 N = int(sys.stdin.readline())
-cache = {1: 1, 2: 1}
+cache = {0: 0, 1: 1, 2: 1}
 
 
 def fibonacci(n):
