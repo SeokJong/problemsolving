@@ -86,7 +86,11 @@
      - 새 숫자를 받았을때 두 힙의 크기가 같으면 max에 max가 더 크면 min에 넣는데
      - 둘의 top을 비교하여 안맞으면 둘을 바꿔준다.
      - 이러면 이것도 O(NlogN)? (둘다 풀어본결과 두번째 방식이 훨씬 빠르다 (1/5 시간))
- 
+- 2098
+  - 외판원
+  - 비트마스킹, DP
+  - dp[curr, visited] = min(dp[curr, visited],  tsp(next, visited + next) + w[curr][next])
+    - visited는 비트로.
 ## SWEA
 - 2819
   - DFS, Memoization
