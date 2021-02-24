@@ -12,9 +12,9 @@ dp = [[-1] * height_sum for _ in range(len(block))]
 dp[0][0] = 0
 dp[0][block[0]] = block[0]
 for i in range(len(block) - 1):
-    for j in range(height_sum):
-        # i+1번째 블록을 사용하지 않는 경우
+    for j in range(height_sum//2 + 1):
         if dp[i][j] != -1:
+            # i+1번째 블록을 사용하지 않는 경우
             dp[i + 1][j] = max(dp[i + 1][j], dp[i][j])
             # 더 높은 탑에 쌓는 경우
             if j + block[i + 1] < height_sum:
