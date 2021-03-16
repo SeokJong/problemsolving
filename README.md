@@ -346,6 +346,10 @@
     - 양쪽 다 걸친다.
   - 이렇게 dp를 돌린다..
   - [https://casterian.net/archives/1356] 참고하여 풀었음
+- 7579(앱)
+  - dp, 냅색
+  - dp[i][j] : i번째 앱까지 확인했을떼, j 코스트를 사용했을때 최대 메모리
+  - dp[i][j] = max(dp[i-1][j-cost[i]] + memory[i], dp[i-1][j]), dp[0][cost[0]] = memory[0]
 ## SWEA
 - 2819
   - DFS, Memoization
